@@ -1,0 +1,31 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Validate') {
+            steps {
+                bat '''
+                    if not exist index.html exit /b 1
+                    if not exist style.css exit /b 1
+                    echo Website files validated
+                '''
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                bat '''
+                    if not exist "C:\\Tomcat\\webapps\\webspace" (
+                        mkdir "C:\\Tomcat\\webapps\\webspace"
+                    )
+
+                    copy /Y index.html "C:\\Tomcat\\webapps\\webspace\\index.html"
+                    if errorlevel 1 exit /b 1
+
+                    copy /Y style.css "C:\\Tomcat\\webapps\\webspace\\style.css"
+                    if errorlevel 1 exit /b 1
+                '''
+            }
+        }
+    }
+}
